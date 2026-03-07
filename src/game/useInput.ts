@@ -2,23 +2,32 @@ import { useEffect, useRef, useCallback } from 'react';
 
 const ARROW_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
 
-export default function useInput(onAction: () => void) {
+export default function useInput(onAction: (holdDuration: number) => void) {
   const heldKeys = useRef(new Set<string>());
   const onActionRef = useRef(onAction);
   onActionRef.current = onAction;
+  const chargeStartRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (ARROW_KEYS.has(e.key)) {
         e.preventDefault();
         heldKeys.current.add(e.key);
+      } else if (e.key === ' ' && !e.repeat) {
+        e.preventDefault();
+        chargeStartRef.current = performance.now();
       } else if (!e.repeat) {
-        onActionRef.current?.();
+        onActionRef.current?.(0);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
       heldKeys.current.delete(e.key);
+      if (e.key === ' ' && chargeStartRef.current !== null) {
+        const holdDuration = (performance.now() - chargeStartRef.current) / 1000;
+        chargeStartRef.current = null;
+        onActionRef.current?.(holdDuration);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -28,6 +37,7 @@ export default function useInput(onAction: () => void) {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       keys.clear();
+      chargeStartRef.current = null;
     };
   }, []);
 
@@ -42,5 +52,5 @@ export default function useInput(onAction: () => void) {
     return { dx, dy };
   }, []);
 
-  return { getDirection };
+  return { getDirection, chargeStartRef };
 }

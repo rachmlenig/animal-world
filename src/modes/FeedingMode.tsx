@@ -10,7 +10,9 @@ import Confetti from '../components/Confetti';
 import type { Theme, WanderingAnimal, FoodEntity, SoundLabelData, ConfettiTrigger } from '../types';
 
 const AIM_SPEED = 3;
-const THROW_DISTANCE = 250;
+const MIN_THROW_DISTANCE = 200;
+const MAX_THROW_DISTANCE = 400;
+const MAX_CHARGE_TIME = 1.5;
 const FLIGHT_DURATION = 0.8;
 const FOOD_LIFETIME = 3;
 const EAT_RADIUS = 120;
@@ -71,13 +73,15 @@ export default function FeedingMode({ theme }: Props) {
 
   const { playSound, playCelebration, ensureContext, muted, toggleMute } = useAudio();
 
-  const throwFood = useCallback(() => {
+  const throwFood = useCallback((holdDuration: number) => {
     ensureContext();
+    const charge = Math.min(holdDuration / MAX_CHARGE_TIME, 1);
+    const throwDistance = MIN_THROW_DISTANCE + charge * (MAX_THROW_DISTANCE - MIN_THROW_DISTANCE);
     const angle = aimAngle.current;
     const startX = playerX.current;
     const startY = playerY.current;
-    const endX = startX + Math.cos(angle) * THROW_DISTANCE;
-    const endY = startY + Math.sin(angle) * THROW_DISTANCE;
+    const endX = startX + Math.cos(angle) * throwDistance;
+    const endY = startY + Math.sin(angle) * throwDistance;
 
     foodsRef.current.push({
       id: uid(),
@@ -94,7 +98,7 @@ export default function FeedingMode({ theme }: Props) {
     });
   }, [theme, ensureContext]);
 
-  const { getDirection } = useInput(throwFood);
+  const { getDirection, chargeStartRef } = useInput(throwFood);
 
   const update = useCallback(
     (dt: number) => {
@@ -218,6 +222,11 @@ export default function FeedingMode({ theme }: Props) {
   const angle = aimAngle.current;
   const t = timeRef.current;
 
+  const charging = chargeStartRef.current !== null;
+  const chargeProgress = charging
+    ? Math.min((performance.now() - chargeStartRef.current!) / (MAX_CHARGE_TIME * 1000), 1)
+    : 0;
+
   const aimLen = 60;
   const aimX = px + Math.cos(angle) * aimLen;
   const aimY = py + Math.sin(angle) * aimLen;
@@ -275,6 +284,35 @@ export default function FeedingMode({ theme }: Props) {
       ))}
 
       <PlayerCharacter x={px} y={py} emoji={theme.player.emoji} />
+
+      {charging && (
+        <div
+          style={{
+            position: 'absolute',
+            left: px - 30,
+            top: py + 35,
+            width: 60,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            border: '1px solid rgba(255,255,255,0.5)',
+            zIndex: 20,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              width: `${chargeProgress * 100}%`,
+              height: '100%',
+              borderRadius: 3,
+              background: chargeProgress < 0.5
+                ? `rgb(${Math.round(chargeProgress * 2 * 255)}, 255, 0)`
+                : `rgb(255, ${Math.round((1 - (chargeProgress - 0.5) * 2) * 255)}, 0)`,
+              transition: 'width 0.05s linear',
+            }}
+          />
+        </div>
+      )}
 
       {confetti && <Confetti key={confetti.id} x={confetti.x} y={confetti.y} active={true} />}
     </div>
