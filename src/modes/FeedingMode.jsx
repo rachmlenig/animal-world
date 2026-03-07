@@ -7,6 +7,7 @@ import PlayerCharacter from '../components/PlayerCharacter';
 import FoodItem from '../components/FoodItem';
 import SoundLabel from '../components/SoundLabel';
 import HUD from '../components/HUD';
+import Confetti from '../components/Confetti';
 
 const AIM_SPEED = 3; // radians per second
 const THROW_DISTANCE = 250; // px
@@ -60,10 +61,12 @@ export default function FeedingMode({ theme }) {
   const scoreRef = useRef(0);
   const timeRef = useRef(0);
   const spawnTimerRef = useRef(0);
+  const confettiIdRef = useRef(0);
 
   const [, setTick] = useState(0);
+  const [confetti, setConfetti] = useState(null);
 
-  const { playSound, ensureContext } = useAudio();
+  const { playSound, playCelebration, ensureContext, muted, toggleMute } = useAudio();
 
   const throwFood = useCallback(() => {
     ensureContext();
@@ -159,6 +162,11 @@ export default function FeedingMode({ theme }) {
               playSound(a);
               labels.push({ id: uid(), x: a.x, y: a.y, text: a.sound, time: t });
               labels.push({ id: uid(), x: a.x + 20, y: a.y - 20, text: '\u2764\uFE0F', time: t });
+              if (scoreRef.current % 5 === 0) {
+                playCelebration();
+                confettiIdRef.current++;
+                setConfetti({ id: confettiIdRef.current, x: a.x, y: a.y });
+              }
             } else {
               const speed = WANDER_SPEED * 2;
               a.x += (dx / dist) * speed * dt;
@@ -213,7 +221,7 @@ export default function FeedingMode({ theme }) {
 
       setTick((tick) => tick + 1);
     },
-    [getDirection, playSound, theme]
+    [getDirection, playSound, playCelebration, theme]
   );
 
   useGameLoop(update);
@@ -253,7 +261,7 @@ export default function FeedingMode({ theme }) {
         </div>
       ))}
 
-      <HUD count={scoreRef.current} accentColor={theme.accentColor} label="fed" />
+      <HUD count={scoreRef.current} accentColor={theme.accentColor} label="fed" muted={muted} onToggleMute={toggleMute} />
 
       {/* Aim indicator */}
       <svg
@@ -300,6 +308,8 @@ export default function FeedingMode({ theme }) {
       ))}
 
       <PlayerCharacter x={px} y={py} emoji={theme.player.emoji} />
+
+      {confetti && <Confetti key={confetti.id} x={confetti.x} y={confetti.y} active={true} />}
     </div>
   );
 }
