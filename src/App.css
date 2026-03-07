@@ -83,7 +83,124 @@ html, body, #root {
   50% { transform: rotate(3deg); }
 }
 
-/* Mode picker cards */
+/* Picker screens */
+.picker-screen {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background: linear-gradient(135deg, #AEE4FF, #87CEAF, #FFD89B, #A8D8A8);
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.picker-title {
+  font-size: 2.4rem;
+  color: #fff;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.back-button {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 12px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: transform 0.15s;
+}
+
+.back-button:hover {
+  transform: scale(1.05);
+}
+
+.home-button {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 12px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: inherit;
+  transition: transform 0.15s;
+}
+
+.home-button:hover {
+  transform: scale(1.05);
+}
+
+/* World picker grid */
+.world-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 600px;
+}
+
+.world-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 30px 40px;
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+}
+
+.world-card:hover, .world-card.focused {
+  transform: scale(1.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  border-color: #fff;
+  outline: none;
+}
+
+.world-card-icon {
+  font-size: 3.5rem;
+}
+
+.world-card-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.world-card-animals {
+  font-size: 1.6rem;
+}
+
+/* Mode picker grid */
+.mode-grid {
+  display: flex;
+  gap: 30px;
+}
+
+/* Mode cards (shared between mode picker) */
 .mode-card {
   display: flex;
   flex-direction: column;
@@ -94,14 +211,15 @@ html, body, #root {
   border: 4px solid rgba(255, 255, 255, 0.9);
   border-radius: 24px;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.2s;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   font-family: inherit;
 }
 
-.mode-card:hover, .mode-card:focus {
+.mode-card:hover, .mode-card.focused {
   transform: scale(1.08);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 1);
   outline: none;
 }
 
