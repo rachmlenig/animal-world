@@ -2,13 +2,13 @@ import { useEffect, useRef, useCallback } from 'react';
 
 const ARROW_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']);
 
-export default function useInput(onAction) {
-  const heldKeys = useRef(new Set());
+export default function useInput(onAction: () => void) {
+  const heldKeys = useRef(new Set<string>());
   const onActionRef = useRef(onAction);
   onActionRef.current = onAction;
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (ARROW_KEYS.has(e.key)) {
         e.preventDefault();
         heldKeys.current.add(e.key);
@@ -17,16 +17,17 @@ export default function useInput(onAction) {
       }
     };
 
-    const handleKeyUp = (e) => {
+    const handleKeyUp = (e: KeyboardEvent) => {
       heldKeys.current.delete(e.key);
     };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    const keys = heldKeys.current;
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      heldKeys.current.clear();
+      keys.clear();
     };
   }, []);
 

@@ -1,6 +1,12 @@
 import { memo } from 'react';
 
-function SoundLabel({ x, y, text }) {
+interface Props {
+  x: number;
+  y: number;
+  text: string;
+}
+
+function SoundLabel({ x, y, text }: Props) {
   return (
     <div
       className="sound-label"

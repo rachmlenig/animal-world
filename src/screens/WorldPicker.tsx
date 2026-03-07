@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { THEME_LIST } from '../data/themes';
+import type { Theme } from '../types';
 
-export default function WorldPicker({ onSelect }) {
+interface Props {
+  onSelect: (theme: Theme) => void;
+}
+
+export default function WorldPicker({ onSelect }: Props) {
   const [focused, setFocused] = useState(0);
 
   const handleKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
           e.preventDefault();
@@ -25,7 +30,7 @@ export default function WorldPicker({ onSelect }) {
           break;
         default:
           if (!e.repeat) {
-            onSelect(THEME_LIST[focused]);
+            onSelect(THEME_LIST[focused]!);
           }
           break;
       }
