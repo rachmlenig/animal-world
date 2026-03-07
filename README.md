@@ -1,16 +1,69 @@
-# React + Vite
+# Animal World
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A toddler-friendly animal game with multiple themes and game modes. Any key smash produces immediate, satisfying visual and audio feedback. Arrow keys provide light gameplay mechanics appropriate for supervised play.
 
-Currently, two official plugins are available:
+## Themes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Theme | Player | Animals |
+|-------|--------|---------|
+| The Farm | Farmer | Cow, Pig, Chicken, Sheep, Duck, Horse |
+| The Safari | Explorer | Lion, Elephant, Giraffe, Zebra, Hippo, Monkey |
+| The Ocean | Diver | Fish, Crab, Octopus, Squid, Dolphin, Turtle |
+| The Forest | Sprite | Fox, Bear, Deer, Rabbit, Owl, Hedgehog |
 
-## React Compiler
+## Game Modes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Conga Parade** — Move with arrow keys, smash any key to spawn animals, walk into them to collect a wiggling conga chain. Confetti burst when you collect them all.
 
-## Expanding the ESLint configuration
+**Feeding Time** — Aim with arrow keys, press any key to throw food. Animals wander in from the edges and walk over to eat. Confetti every 5 fed.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+- React + TypeScript
+- Vite
+- Web Audio API (no sound files)
+- DOM-based rendering with CSS animations
+- ESLint with TypeScript plugin
+
+## Getting Started
+
+```sh
+npm install
+npm run dev
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Type check + production build |
+| `npm run typecheck` | Run TypeScript type checking |
+| `npm run lint` | Run ESLint |
+| `npm run preview` | Preview production build |
+
+## Project Structure
+
+```
+src/
+  App.tsx              Screen state machine
+  types.ts             Shared TypeScript types
+  data/themes.ts       All theme data (animals, colors, emojis)
+  screens/
+    WorldPicker.tsx    4-card theme selector
+    ModePicker.tsx     2-card mode selector
+  modes/
+    CongaMode.tsx      Conga parade game logic
+    FeedingMode.tsx    Feeding time game logic
+  game/
+    useGameLoop.ts     requestAnimationFrame loop
+    useInput.ts        Keyboard input handler
+    useAudio.ts        Web Audio API sounds
+  components/
+    AnimalEntity.tsx   Single animal with animations
+    PlayerCharacter.tsx Player emoji
+    FoodItem.tsx       Food with arc animation
+    SoundLabel.tsx     Floating text (MOO!, etc.)
+    Confetti.tsx       Particle burst
+    HUD.tsx            Score + volume toggle
+```
