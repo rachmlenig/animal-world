@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-function HUD({ count, accentColor }) {
+function HUD({ count, accentColor, label }) {
   return (
     <div
       style={{
@@ -18,7 +18,7 @@ function HUD({ count, accentColor }) {
         userSelect: 'none',
       }}
     >
-      {'\u{1F3B6}'} {count} friend{count !== 1 ? 's' : ''}!
+      {label === 'fed' ? '\u{1F31F}' : '\u{1F3B6}'} {count} {label === 'fed' ? 'fed' : `friend${count !== 1 ? 's' : ''}`}!
     </div>
   );
 }
