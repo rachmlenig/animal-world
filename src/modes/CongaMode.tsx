@@ -158,27 +158,12 @@ export default function CongaMode({ theme }: Props) {
     <div
       className="game-area"
       style={{
-        background: `linear-gradient(180deg, ${theme.bgGradient[0]} 0%, ${theme.bgGradient[1]} 50%, ${theme.bgGradient[2]} 100%)`,
+        backgroundImage: `url(${theme.backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundColor: theme.bgGradient[1],
       }}
     >
-      {theme.decorations.map((d, i) => (
-        <div
-          key={`dec-${i}`}
-          className="decoration"
-          style={{
-            position: 'absolute',
-            left: `${20 + i * 30}%`,
-            bottom: `${5 + i * 3}%`,
-            fontSize: '2.5rem',
-            opacity: 0.5,
-            userSelect: 'none',
-            pointerEvents: 'none',
-          }}
-        >
-          {d}
-        </div>
-      ))}
-
       <HUD count={chain.length} accentColor={theme.accentColor} muted={muted} onToggleMute={toggleMute} />
 
       {animalsRef.current.map((a) => (

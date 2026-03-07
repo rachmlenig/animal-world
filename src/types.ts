@@ -42,6 +42,7 @@ export interface Theme {
   name: string;
   icon: string;
   bgGradient: [string, string, string];
+  backgroundImage: string;
   accentColor: string;
   player: { emoji: string; label: string };
   food: { emoji: string; label: string };

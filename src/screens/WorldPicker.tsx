@@ -44,7 +44,7 @@ export default function WorldPicker({ onSelect }: Props) {
   }, [handleKeyDown]);
 
   return (
-    <div className="picker-screen">
+    <div className="picker-screen screen-fade-in">
       <h1 className="picker-title">Pick Your World!</h1>
       <div className="world-grid">
         {THEME_LIST.map((theme, i) => (

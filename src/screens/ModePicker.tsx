@@ -9,9 +9,20 @@ interface Props {
 
 export default function ModePicker({ theme, onSelect, onBack }: Props) {
   const [focused, setFocused] = useState(0);
+  const [zooming, setZooming] = useState<string | null>(null);
+
+  const triggerSelect = useCallback(
+    (mode: string) => {
+      if (zooming) return;
+      setZooming(mode);
+      setTimeout(() => onSelect(mode), 700);
+    },
+    [zooming, onSelect]
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      if (zooming) return;
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':
@@ -28,12 +39,12 @@ export default function ModePicker({ theme, onSelect, onBack }: Props) {
           break;
         default:
           if (!e.repeat) {
-            onSelect(focused === 0 ? 'conga' : 'feeding');
+            triggerSelect(focused === 0 ? 'conga' : 'feeding');
           }
           break;
       }
     },
-    [focused, onSelect, onBack]
+    [focused, zooming, triggerSelect, onBack]
   );
 
   useEffect(() => {
@@ -48,19 +59,31 @@ export default function ModePicker({ theme, onSelect, onBack }: Props) {
 
   return (
     <div
-      className="picker-screen"
-      style={{ background: `linear-gradient(180deg, ${theme.bgGradient[0]} 0%, ${theme.bgGradient[1]} 50%, ${theme.bgGradient[2]} 100%)` }}
+      className="picker-screen screen-fade-in"
+      style={{
+        background: `linear-gradient(180deg, ${theme.bgGradient[0]} 0%, ${theme.bgGradient[1]} 50%, ${theme.bgGradient[2]} 100%)`,
+        pointerEvents: zooming ? 'none' : undefined,
+      }}
     >
-      <button className="back-button" onClick={onBack}>
+      {/* World background that zooms in */}
+      <div
+        className={`world-zoom-bg ${zooming ? 'world-zoom-bg-active' : ''}`}
+        style={{
+          backgroundImage: `url(${theme.backgroundImage})`,
+          backgroundColor: theme.bgGradient[1],
+        }}
+      />
+
+      <button className={`back-button ${zooming ? 'fade-out' : ''}`} onClick={onBack}>
         {'\u2B05\uFE0F'} Back
       </button>
-      <h1 className="picker-title">{theme.icon} {theme.name}</h1>
-      <div className="mode-grid">
+      <h1 className={`picker-title ${zooming ? 'fade-out' : ''}`}>{theme.icon} {theme.name}</h1>
+      <div className={`mode-grid ${zooming ? 'fade-out' : ''}`}>
         {modes.map((m, i) => (
           <button
             key={m.id}
             className={`mode-card ${focused === i ? 'focused' : ''}`}
-            onClick={() => onSelect(m.id)}
+            onClick={() => triggerSelect(m.id)}
             onMouseEnter={() => setFocused(i)}
           >
             <span className="mode-card-emoji">{m.emoji}</span>
