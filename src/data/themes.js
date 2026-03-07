@@ -1,6 +1,8 @@
 const THEMES = {
   farm: {
+    key: 'farm',
     name: 'The Farm',
+    icon: '\u{1F404}',
     bgGradient: ['#AEE4FF', '#87CEAF', '#7EC850'],
     accentColor: '#7EC850',
     player: { emoji: '\u{1F468}\u200D\u{1F33E}', label: 'Farmer' },
@@ -15,6 +17,62 @@ const THEMES = {
       { emoji: '\u{1F434}', name: 'Horse', sound: 'NEIGH!', freq: 240, type: 'sawtooth' },
     ],
   },
+  safari: {
+    key: 'safari',
+    name: 'The Safari',
+    icon: '\u{1F981}',
+    bgGradient: ['#FFD89B', '#E8C170', '#C4A44A'],
+    accentColor: '#D4943A',
+    player: { emoji: '\u{1F9ED}', label: 'Explorer' },
+    food: { emoji: '\u{1F356}', label: 'meat' },
+    decorations: ['\u{1F334}', '\u{1F335}', '\u{26F0}\uFE0F'],
+    animals: [
+      { emoji: '\u{1F981}', name: 'Lion', sound: 'ROAR!', freq: 120, type: 'sawtooth' },
+      { emoji: '\u{1F418}', name: 'Elephant', sound: 'TOOT!', freq: 100, type: 'sine' },
+      { emoji: '\u{1F992}', name: 'Giraffe', sound: 'HUM!', freq: 200, type: 'sine' },
+      { emoji: '\u{1F993}', name: 'Zebra', sound: 'BRAY!', freq: 260, type: 'sawtooth' },
+      { emoji: '\u{1F99B}', name: 'Hippo', sound: 'GRUNT!', freq: 90, type: 'sine' },
+      { emoji: '\u{1F412}', name: 'Monkey', sound: 'OOH!', freq: 450, type: 'sine' },
+    ],
+  },
+  ocean: {
+    key: 'ocean',
+    name: 'The Ocean',
+    icon: '\u{1F420}',
+    bgGradient: ['#87CEEB', '#4A90D9', '#1B4F72'],
+    accentColor: '#2E86C1',
+    player: { emoji: '\u{1F93F}', label: 'Diver' },
+    food: { emoji: '\u{1F990}', label: 'shrimp' },
+    decorations: ['\u{1FAB8}', '\u{1F41A}', '\u{2693}'],
+    animals: [
+      { emoji: '\u{1F420}', name: 'Fish', sound: 'BLUB!', freq: 500, type: 'sine' },
+      { emoji: '\u{1F980}', name: 'Crab', sound: 'CLICK!', freq: 600, type: 'square' },
+      { emoji: '\u{1F419}', name: 'Octopus', sound: 'SQUISH!', freq: 150, type: 'sine' },
+      { emoji: '\u{1F991}', name: 'Squid', sound: 'SQUIRT!', freq: 180, type: 'sine' },
+      { emoji: '\u{1F42C}', name: 'Dolphin', sound: 'EEEE!', freq: 700, type: 'sine' },
+      { emoji: '\u{1F422}', name: 'Turtle', sound: 'SNAP!', freq: 200, type: 'square' },
+    ],
+  },
+  forest: {
+    key: 'forest',
+    name: 'The Forest',
+    icon: '\u{1F98A}',
+    bgGradient: ['#A8D8A8', '#5B8C5A', '#3A5F3A'],
+    accentColor: '#4A7C4A',
+    player: { emoji: '\u{1F9DA}', label: 'Sprite' },
+    food: { emoji: '\u{1F344}', label: 'mushroom' },
+    decorations: ['\u{1F332}', '\u{1F343}', '\u{1FAB9}'],
+    animals: [
+      { emoji: '\u{1F98A}', name: 'Fox', sound: 'YIP!', freq: 380, type: 'sawtooth' },
+      { emoji: '\u{1F43B}', name: 'Bear', sound: 'GROWL!', freq: 100, type: 'sawtooth' },
+      { emoji: '\u{1F98C}', name: 'Deer', sound: 'BLEAT!', freq: 300, type: 'sine' },
+      { emoji: '\u{1F430}', name: 'Rabbit', sound: 'SQUEAK!', freq: 550, type: 'sine' },
+      { emoji: '\u{1F989}', name: 'Owl', sound: 'HOOT!', freq: 250, type: 'sine' },
+      { emoji: '\u{1F994}', name: 'Hedgehog', sound: 'SNUFFLE!', freq: 400, type: 'sine' },
+    ],
+  },
 };
+
+export const THEME_LIST = Object.values(THEMES);
 
 export default THEMES;
