@@ -93,6 +93,13 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   gap: 30px;
+}
+
+.picker-screen-landing {
+  background: #1a1a2e;
+}
+
+.picker-screen-mode {
   background: linear-gradient(135deg, #AEE4FF, #87CEAF, #FFD89B, #A8D8A8);
   background-size: 400% 400%;
   animation: gradient-shift 8s ease infinite;
@@ -104,11 +111,37 @@ html, body, #root {
   100% { background-position: 0% 50%; }
 }
 
+/* Starfield background */
+.stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 45%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 90% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 90%, rgba(255,255,255,0.3) 0%, transparent 100%);
+}
+
 .picker-title {
-  font-size: 2.4rem;
-  color: #fff;
-  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  font-family: 'Baloo 2', cursive;
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: white;
+  text-align: center;
+  text-shadow: 0 0 30px rgba(255, 220, 100, 0.5);
+  animation: titlePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  letter-spacing: 1px;
   user-select: none;
+}
+
+@keyframes titlePop {
+  from { opacity: 0; transform: scale(0.7) translateY(-20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .back-button {
@@ -116,17 +149,21 @@ html, body, #root {
   top: 16px;
   left: 16px;
   font-size: 1.3rem;
-  background: rgba(255, 255, 255, 0.8);
-  border: none;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50px;
   padding: 6px 16px;
   cursor: pointer;
-  font-weight: bold;
-  font-family: inherit;
-  transition: transform 0.15s;
+  font-weight: 700;
+  font-family: 'Baloo 2', cursive;
+  color: white;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, transform 0.2s;
+  z-index: 10;
 }
 
 .back-button:hover {
+  background: rgba(255, 255, 255, 0.4);
   transform: scale(1.05);
 }
 
@@ -135,63 +172,179 @@ html, body, #root {
   top: 16px;
   left: 16px;
   z-index: 100;
-  font-size: 1.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  border: none;
-  border-radius: 12px;
+  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50px;
   padding: 6px 16px;
   cursor: pointer;
-  font-weight: bold;
-  font-family: inherit;
-  transition: transform 0.15s;
+  font-weight: 700;
+  font-family: 'Baloo 2', cursive;
+  color: white;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, transform 0.2s;
 }
 
 .home-button:hover {
+  background: rgba(255, 255, 255, 0.4);
   transform: scale(1.05);
 }
 
-/* World picker grid */
-.world-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  max-width: 600px;
+/* World picker carousel */
+.carousel-wrap {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 20px 60px;
 }
 
 .world-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 30px 40px;
-  border: 4px solid rgba(255, 255, 255, 0.6);
-  border-radius: 24px;
+  width: 260px;
+  height: 360px;
+  border-radius: 28px;
+  border: none;
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.2s;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  animation: cardRise 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   font-family: inherit;
 }
 
+.world-card:nth-child(1) { animation-delay: 0.1s; }
+.world-card:nth-child(2) { animation-delay: 0.2s; }
+.world-card:nth-child(3) { animation-delay: 0.3s; }
+.world-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes cardRise {
+  from { opacity: 0; transform: translateY(60px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .world-card:hover, .world-card.focused {
-  transform: scale(1.08);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  border-color: #fff;
+  transform: translateY(-12px) scale(1.04);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   outline: none;
 }
 
-.world-card-icon {
-  font-size: 3.5rem;
+.card-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+  border-radius: 28px;
 }
 
-.world-card-name {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+.label-tag {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+  z-index: 2;
 }
 
-.world-card-animals {
+.card-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card-emoji-hero {
+  font-size: 5.5rem;
+  margin-bottom: 12px;
+  animation: heroFloat 3s ease-in-out infinite;
+  display: block;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+}
+
+.world-card:nth-child(2) .card-emoji-hero { animation-delay: 0.5s; }
+.world-card:nth-child(3) .card-emoji-hero { animation-delay: 1s; }
+.world-card:nth-child(4) .card-emoji-hero { animation-delay: 1.5s; }
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.card-title {
+  font-family: 'Baloo 2', cursive;
   font-size: 1.6rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  margin-bottom: 8px;
+}
+
+.card-friends {
+  display: flex;
+  gap: 4px;
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.card-friends span {
+  animation: friendBounce 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.card-friends span:nth-child(2) { animation-delay: 0.15s; }
+.card-friends span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes friendBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+.card-btn {
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50px;
+  color: white;
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 8px 22px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.card-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+/* Nav dots */
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: white;
+  width: 24px;
+  border-radius: 4px;
 }
 
 /* Mode picker grid */
