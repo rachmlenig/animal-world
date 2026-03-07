@@ -1,6 +1,4 @@
-import { memo } from 'react';
-
-function FoodItem({ food }) {
+export default function FoodItem({ food }) {
   // During flight, scale up from small; when landed, full size
   const inFlight = food.flight > 0;
   const scale = inFlight ? 0.5 + food.flight * 0.5 : 1;
@@ -27,4 +25,3 @@ function FoodItem({ food }) {
   );
 }
 
-export default memo(FoodItem);
