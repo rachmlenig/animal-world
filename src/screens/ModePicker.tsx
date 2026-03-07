@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { Theme } from '../types';
 
-export default function ModePicker({ theme, onSelect, onBack }) {
+interface Props {
+  theme: Theme;
+  onSelect: (mode: string) => void;
+  onBack: () => void;
+}
+
+export default function ModePicker({ theme, onSelect, onBack }: Props) {
   const [focused, setFocused] = useState(0);
 
   const handleKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       switch (e.key) {
         case 'ArrowRight':
         case 'ArrowDown':

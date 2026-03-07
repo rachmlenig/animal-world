@@ -1,6 +1,12 @@
 import { memo } from 'react';
 
-function PlayerCharacter({ x, y, emoji }) {
+interface Props {
+  x: number;
+  y: number;
+  emoji: string;
+}
+
+function PlayerCharacter({ x, y, emoji }: Props) {
   return (
     <div
       style={{

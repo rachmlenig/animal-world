@@ -1,17 +1,18 @@
 import { useRef, useCallback, useState } from 'react';
+import type { AnimalData } from '../types';
 
-const MIN_INTERVAL = 50; // ms between sounds
+const MIN_INTERVAL = 50;
 
 export default function useAudio() {
-  const ctxRef = useRef(null);
+  const ctxRef = useRef<AudioContext | null>(null);
   const lastPlayRef = useRef(0);
-  const gainNodeRef = useRef(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
   const [muted, setMuted] = useState(false);
   const mutedRef = useRef(false);
 
   const ensureContext = useCallback(() => {
     if (!ctxRef.current) {
-      ctxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      ctxRef.current = new AudioContext();
       gainNodeRef.current = ctxRef.current.createGain();
       gainNodeRef.current.gain.value = mutedRef.current ? 0 : 1;
       gainNodeRef.current.connect(ctxRef.current.destination);
@@ -33,7 +34,7 @@ export default function useAudio() {
     });
   }, []);
 
-  const playSound = useCallback((animal) => {
+  const playSound = useCallback((animal: AnimalData) => {
     if (mutedRef.current) return;
     const now = performance.now();
     if (now - lastPlayRef.current < MIN_INTERVAL) return;
@@ -54,7 +55,7 @@ export default function useAudio() {
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
 
     osc.connect(gain);
-    gain.connect(gainNodeRef.current);
+    gain.connect(gainNodeRef.current!);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.3);
   }, [ensureContext]);
@@ -62,8 +63,7 @@ export default function useAudio() {
   const playCelebration = useCallback(() => {
     if (mutedRef.current) return;
     const ctx = ensureContext();
-    // Quick ascending arpeggio
-    const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+    const notes = [523, 659, 784, 1047];
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -73,7 +73,7 @@ export default function useAudio() {
       gain.gain.setValueAtTime(0.2, startTime);
       gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
       osc.connect(gain);
-      gain.connect(gainNodeRef.current);
+      gain.connect(gainNodeRef.current!);
       osc.start(startTime);
       osc.stop(startTime + 0.3);
     });

@@ -1,6 +1,12 @@
 import { memo } from 'react';
+import type { AnimalEntity as AnimalEntityType } from '../types';
 
-function AnimalEntity({ animal, collected }) {
+interface Props {
+  animal: AnimalEntityType;
+  collected: boolean;
+}
+
+function AnimalEntity({ animal, collected }: Props) {
   return (
     <div
       className={`animal-entity ${animal.spawning ? 'spawning' : ''} ${collected ? 'collected' : 'idle-bob'}`}

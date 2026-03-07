@@ -1,4 +1,6 @@
-const THEMES = {
+import type { Theme } from '../types';
+
+const THEMES: Record<string, Theme> = {
   farm: {
     key: 'farm',
     name: 'The Farm',
@@ -73,6 +75,6 @@ const THEMES = {
   },
 };
 
-export const THEME_LIST = Object.values(THEMES);
+export const THEME_LIST: Theme[] = Object.values(THEMES);
 
 export default THEMES;

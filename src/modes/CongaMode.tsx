@@ -7,6 +7,7 @@ import PlayerCharacter from '../components/PlayerCharacter';
 import SoundLabel from '../components/SoundLabel';
 import HUD from '../components/HUD';
 import Confetti from '../components/Confetti';
+import type { Theme, AnimalEntity as AnimalEntityType, SoundLabelData, ConfettiTrigger } from '../types';
 
 const PLAYER_SPEED = 300;
 const COLLECT_RADIUS = 60;
@@ -18,17 +19,21 @@ function uid() {
   return nextId++;
 }
 
-export default function CongaMode({ theme }) {
+interface Props {
+  theme: Theme;
+}
+
+export default function CongaMode({ theme }: Props) {
   const playerRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const animalsRef = useRef([]);
-  const chainRef = useRef([]);
-  const labelsRef = useRef([]);
-  const trailRef = useRef([]);
+  const animalsRef = useRef<AnimalEntityType[]>([]);
+  const chainRef = useRef<AnimalEntityType[]>([]);
+  const labelsRef = useRef<SoundLabelData[]>([]);
+  const trailRef = useRef<{ x: number; y: number }[]>([]);
   const timeRef = useRef(0);
   const confettiIdRef = useRef(0);
 
   const [, setTick] = useState(0);
-  const [confetti, setConfetti] = useState(null);
+  const [confetti, setConfetti] = useState<ConfettiTrigger | null>(null);
 
   const { playSound, playCelebration, ensureContext, muted, toggleMute } = useAudio();
 
@@ -38,17 +43,19 @@ export default function CongaMode({ theme }) {
     if (animals.length >= MAX_ANIMALS) {
       animals.shift();
     }
-    const data = theme.animals[Math.floor(Math.random() * theme.animals.length)];
+    const data = theme.animals[Math.floor(Math.random() * theme.animals.length)]!;
     const padding = 80;
-    animals.push({
+    const newAnimal: AnimalEntityType = {
       ...data,
       id: uid(),
       x: padding + Math.random() * (window.innerWidth - padding * 2),
       y: padding + Math.random() * (window.innerHeight - padding * 2),
       spawning: true,
-    });
+    };
+    animals.push(newAnimal);
+    const animalId = newAnimal.id;
     setTimeout(() => {
-      const a = animals.find((a) => a.spawning);
+      const a = animals.find((a) => a.id === animalId);
       if (a) a.spawning = false;
     }, 300);
   }, [theme, ensureContext]);
@@ -56,7 +63,7 @@ export default function CongaMode({ theme }) {
   const { getDirection } = useInput(spawnAnimal);
 
   const update = useCallback(
-    (dt) => {
+    (dt: number) => {
       timeRef.current += dt;
       const dir = getDirection();
       const p = playerRef.current;
@@ -82,7 +89,7 @@ export default function CongaMode({ theme }) {
       let collectedAny = false;
 
       for (let i = animals.length - 1; i >= 0; i--) {
-        const a = animals[i];
+        const a = animals[i]!;
         const dist = Math.hypot(a.x - p.x, a.y - p.y);
         if (dist < COLLECT_RADIUS) {
           playSound(a);
@@ -93,7 +100,6 @@ export default function CongaMode({ theme }) {
         }
       }
 
-      // Wave complete: collected all on-screen animals
       if (collectedAny && animals.length === 0 && chain.length > 0) {
         playCelebration();
         confettiIdRef.current++;
@@ -113,7 +119,7 @@ export default function CongaMode({ theme }) {
   const chain = chainRef.current;
   const t = timeRef.current;
 
-  const chainPositions = [];
+  const chainPositions: { x: number; y: number }[] = [];
   let distNeeded = CHAIN_SPACING;
   let trailIdx = trail.length - 1;
   let prevPoint = { x: player.x, y: player.y };
@@ -121,7 +127,7 @@ export default function CongaMode({ theme }) {
   for (let i = 0; i < chain.length; i++) {
     let placed = false;
     while (trailIdx >= 0) {
-      const tp = trail[trailIdx];
+      const tp = trail[trailIdx]!;
       const segDist = Math.hypot(tp.x - prevPoint.x, tp.y - prevPoint.y);
       if (segDist >= distNeeded) {
         const ratio = distNeeded / segDist;
@@ -140,7 +146,7 @@ export default function CongaMode({ theme }) {
       trailIdx--;
     }
     if (!placed) {
-      const lastPos = chainPositions[i - 1] || player;
+      const lastPos = chainPositions[i - 1] ?? player;
       chainPositions.push({
         x: lastPos.x + Math.sin(t * 3 + i * 0.8) * 6,
         y: Math.min(lastPos.y + CHAIN_SPACING, window.innerHeight - 30) + Math.cos(t * 2.5 + i * 0.6) * 4,
@@ -182,7 +188,7 @@ export default function CongaMode({ theme }) {
       {chain.map((a, i) => (
         <AnimalEntity
           key={`c-${a.id}`}
-          animal={{ ...a, x: chainPositions[i].x, y: chainPositions[i].y, spawning: false }}
+          animal={{ ...a, x: chainPositions[i]!.x, y: chainPositions[i]!.y, spawning: false }}
           collected={true}
         />
       ))}

@@ -1,6 +1,14 @@
 import { memo } from 'react';
 
-function HUD({ count, accentColor, label, muted, onToggleMute }) {
+interface Props {
+  count: number;
+  accentColor: string;
+  label?: string;
+  muted?: boolean;
+  onToggleMute?: () => void;
+}
+
+function HUD({ count, accentColor, label, muted, onToggleMute }: Props) {
   return (
     <div style={{ position: 'absolute', top: 16, right: 24, zIndex: 50, display: 'flex', alignItems: 'center', gap: 12, userSelect: 'none' }}>
       {onToggleMute && (
