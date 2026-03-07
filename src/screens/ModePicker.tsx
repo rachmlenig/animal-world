@@ -77,7 +77,7 @@ export default function ModePicker({ theme, onSelect, onBack }: Props) {
       <button className={`back-button ${zooming ? 'fade-out' : ''}`} onClick={onBack}>
         {'\u2B05\uFE0F'} Back
       </button>
-      <h1 className={`picker-title ${zooming ? 'fade-out' : ''}`}>{theme.icon} {theme.name}</h1>
+      <h1 className={`picker-title title-jiggle ${zooming ? 'fade-out' : ''}`}>{theme.icon} {theme.name}</h1>
       <div className={`mode-grid ${zooming ? 'fade-out' : ''}`}>
         {modes.map((m, i) => (
           <button
