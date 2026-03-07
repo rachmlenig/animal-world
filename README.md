@@ -25,12 +25,42 @@ A toddler-friendly animal game with multiple themes and game modes. Any key smas
 - DOM-based rendering with CSS animations
 - ESLint with TypeScript plugin
 
-## Getting Started
+## Run Locally
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
+
+Open http://localhost:5173
+
+## Docker
+
+### Build image
+
+```sh
+docker build -t animal-world .
+```
+
+### Run container
+
+```sh
+docker run --rm -p 8080:80 animal-world
+```
+
+### Run with Docker Compose
+
+```sh
+docker compose up --build
+```
+
+To stop:
+
+```sh
+docker compose down
+```
+
+Open http://localhost:8080
 
 ## Scripts
 
@@ -44,26 +74,26 @@ npm run dev
 
 ## Project Structure
 
-```
+```text
 src/
-  App.tsx              Screen state machine
-  types.ts             Shared TypeScript types
-  data/themes.ts       All theme data (animals, colors, emojis)
+  App.tsx               Screen state machine
+  types.ts              Shared TypeScript types
+  data/themes.ts        All theme data (animals, colors, emojis)
   screens/
-    WorldPicker.tsx    4-card theme selector
-    ModePicker.tsx     2-card mode selector
+    WorldPicker.tsx     4-card theme selector
+    ModePicker.tsx      2-card mode selector
   modes/
-    CongaMode.tsx      Conga parade game logic
-    FeedingMode.tsx    Feeding time game logic
+    CongaMode.tsx       Conga parade game logic
+    FeedingMode.tsx     Feeding time game logic
   game/
-    useGameLoop.ts     requestAnimationFrame loop
-    useInput.ts        Keyboard input handler
-    useAudio.ts        Web Audio API sounds
+    useGameLoop.ts      requestAnimationFrame loop
+    useInput.ts         Keyboard input handler
+    useAudio.ts         Web Audio API sounds
   components/
-    AnimalEntity.tsx   Single animal with animations
+    AnimalEntity.tsx    Single animal with animations
     PlayerCharacter.tsx Player emoji
-    FoodItem.tsx       Food with arc animation
-    SoundLabel.tsx     Floating text (MOO!, etc.)
-    Confetti.tsx       Particle burst
-    HUD.tsx            Score + volume toggle
+    FoodItem.tsx        Food with arc animation
+    SoundLabel.tsx      Floating text (MOO!, etc.)
+    Confetti.tsx        Particle burst
+    HUD.tsx             Score + volume toggle
 ```
