@@ -1,14 +1,28 @@
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import type { AnimalData } from '../types';
 
 const MIN_INTERVAL = 50;
+
+const PLAYLIST = [
+  { url: '/pixel-daydream-groove.mp3', name: 'Daydream Groove' },
+  { url: '/pixel-waves-at-low-tide-2.mp3', name: 'Pixel Waves 2' },
+  { url: '/pixel-drift.mp3', name: 'Pixel Drift' },
+  { url: '/pixel-skies.mp3', name: 'Skies' },
+  { url: '/pixel-waves-at-low-tide.mp3', name: 'Low Tide' },
+  { url: '/song.m4a', name: 'Song' },
+  { url: '/pixel-lemonade.mp3', name: 'Pixel Lemonade' },
+];
 
 export default function useAudio() {
   const ctxRef = useRef<AudioContext | null>(null);
   const lastPlayRef = useRef(0);
   const gainNodeRef = useRef<GainNode | null>(null);
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
+  const trackIndexRef = useRef(0);
   const [muted, setMuted] = useState(false);
   const mutedRef = useRef(false);
+  const [trackName, setTrackName] = useState(PLAYLIST[0]!.name);
+  const [paused, setPaused] = useState(false);
 
   const ensureContext = useCallback(() => {
     if (!ctxRef.current) {
@@ -29,6 +43,9 @@ export default function useAudio() {
       mutedRef.current = next;
       if (gainNodeRef.current) {
         gainNodeRef.current.gain.value = next ? 0 : 1;
+      }
+      if (audioElRef.current) {
+        audioElRef.current.volume = next ? 0 : 0.3;
       }
       return next;
     });
@@ -79,5 +96,72 @@ export default function useAudio() {
     });
   }, [ensureContext]);
 
-  return { playSound, playCelebration, ensureContext, muted, toggleMute };
+  const playTrack = useCallback((index: number) => {
+    const idx = ((index % PLAYLIST.length) + PLAYLIST.length) % PLAYLIST.length;
+    trackIndexRef.current = idx;
+    const track = PLAYLIST[idx]!;
+    setTrackName(track.name);
+    setPaused(false);
+
+    if (audioElRef.current) {
+      audioElRef.current.pause();
+      audioElRef.current.removeAttribute('src');
+      audioElRef.current.load();
+    }
+
+    const audio = new Audio(track.url);
+    audio.volume = mutedRef.current ? 0 : 0.3;
+    audio.onended = () => {
+      playTrack(idx + 1);
+    };
+    audioElRef.current = audio;
+    audio.play();
+  }, []);
+
+  const startMusic = useCallback(() => {
+    playTrack(trackIndexRef.current);
+  }, [playTrack]);
+
+  const stopMusic = useCallback(() => {
+    if (audioElRef.current) {
+      audioElRef.current.pause();
+      audioElRef.current.removeAttribute('src');
+      audioElRef.current.load();
+      audioElRef.current = null;
+    }
+  }, []);
+
+  const pauseMusic = useCallback(() => {
+    if (audioElRef.current) {
+      audioElRef.current.pause();
+      setPaused(true);
+    }
+  }, []);
+
+  const resumeMusic = useCallback(() => {
+    if (audioElRef.current) {
+      audioElRef.current.play();
+      setPaused(false);
+    }
+  }, []);
+
+  const skipTrack = useCallback((direction: 1 | -1) => {
+    playTrack(trackIndexRef.current + direction);
+  }, [playTrack]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (audioElRef.current) {
+        audioElRef.current.pause();
+      }
+    };
+  }, []);
+
+  return {
+    playSound, playCelebration, ensureContext,
+    muted, toggleMute,
+    startMusic, stopMusic, pauseMusic, resumeMusic, skipTrack,
+    trackName, paused,
+  };
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import useGameLoop from '../game/useGameLoop';
 import useInput from '../game/useInput';
 import useAudio from '../game/useAudio';
@@ -7,6 +7,7 @@ import FoodItem from '../components/FoodItem';
 import SoundLabel from '../components/SoundLabel';
 import HUD from '../components/HUD';
 import Confetti from '../components/Confetti';
+import MusicPlayer from '../components/MusicPlayer';
 import type { Theme, WanderingAnimal, FoodEntity, SoundLabelData, ConfettiTrigger } from '../types';
 
 const AIM_SPEED = 3;
@@ -71,7 +72,12 @@ export default function FeedingMode({ theme }: Props) {
   const [, setTick] = useState(0);
   const [confetti, setConfetti] = useState<ConfettiTrigger | null>(null);
 
-  const { playSound, playCelebration, ensureContext, muted, toggleMute } = useAudio();
+  const { playSound, playCelebration, ensureContext, muted, toggleMute, startMusic, stopMusic, pauseMusic, resumeMusic, skipTrack, trackName, paused } = useAudio();
+
+  useEffect(() => {
+    startMusic();
+    return () => stopMusic();
+  }, [startMusic, stopMusic]);
 
   const throwFood = useCallback((holdDuration: number) => {
     ensureContext();
@@ -242,6 +248,7 @@ export default function FeedingMode({ theme }: Props) {
       }}
     >
       <HUD count={scoreRef.current} accentColor={theme.accentColor} label="fed" muted={muted} onToggleMute={toggleMute} />
+      <MusicPlayer trackName={trackName} paused={paused} onPause={pauseMusic} onResume={resumeMusic} onSkip={skipTrack} />
 
       <svg
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 15 }}

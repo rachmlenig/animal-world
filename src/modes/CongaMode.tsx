@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import useGameLoop from '../game/useGameLoop';
 import useInput from '../game/useInput';
 import useAudio from '../game/useAudio';
@@ -7,6 +7,7 @@ import PlayerCharacter from '../components/PlayerCharacter';
 import SoundLabel from '../components/SoundLabel';
 import HUD from '../components/HUD';
 import Confetti from '../components/Confetti';
+import MusicPlayer from '../components/MusicPlayer';
 import type { Theme, AnimalEntity as AnimalEntityType, SoundLabelData, ConfettiTrigger } from '../types';
 
 const PLAYER_SPEED = 300;
@@ -35,7 +36,12 @@ export default function CongaMode({ theme }: Props) {
   const [, setTick] = useState(0);
   const [confetti, setConfetti] = useState<ConfettiTrigger | null>(null);
 
-  const { playSound, playCelebration, ensureContext, muted, toggleMute } = useAudio();
+  const { playSound, playCelebration, ensureContext, muted, toggleMute, startMusic, stopMusic, pauseMusic, resumeMusic, skipTrack, trackName, paused } = useAudio();
+
+  useEffect(() => {
+    startMusic();
+    return () => stopMusic();
+  }, [startMusic, stopMusic]);
 
   const spawnAnimal = useCallback(() => {
     ensureContext();
@@ -165,6 +171,7 @@ export default function CongaMode({ theme }: Props) {
       }}
     >
       <HUD count={chain.length} accentColor={theme.accentColor} muted={muted} onToggleMute={toggleMute} />
+      <MusicPlayer trackName={trackName} paused={paused} onPause={pauseMusic} onResume={resumeMusic} onSkip={skipTrack} />
 
       {animalsRef.current.map((a) => (
         <AnimalEntity key={`a-${a.id}`} animal={a} collected={false} />
