@@ -1,15 +1,15 @@
-import { memo } from 'react';
 import type { AnimalEntity as AnimalEntityType } from '../types';
 
 interface Props {
   animal: AnimalEntityType;
   collected: boolean;
+  beckon?: boolean;
 }
 
-function AnimalEntity({ animal, collected }: Props) {
+function AnimalEntity({ animal, collected, beckon }: Props) {
+  const idleClass = beckon ? 'beckon' : 'idle-bob';
   return (
     <div
-      className={`animal-entity ${animal.spawning ? 'spawning' : ''} ${collected ? 'collected' : 'idle-bob'}`}
       style={{
         position: 'absolute',
         left: animal.x,
@@ -22,9 +22,11 @@ function AnimalEntity({ animal, collected }: Props) {
         userSelect: 'none',
       }}
     >
-      {animal.emoji}
+      <div className={`animal-entity ${animal.spawning ? 'spawning' : ''} ${collected ? 'collected' : idleClass}`}>
+        {animal.emoji}
+      </div>
     </div>
   );
 }
 
-export default memo(AnimalEntity);
+export default AnimalEntity;

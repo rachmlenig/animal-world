@@ -43,17 +43,9 @@ export default function App() {
   }
 
   if (screen === 'game' && theme) {
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100dvh' }}>
-        <button className="home-button" onClick={goHome}>
-          {'\u{1F3E0}'} Home
-        </button>
-        {mode === 'conga'
-          ? <CongaMode key={theme.key} theme={theme} />
-          : <FeedingMode key={theme.key} theme={theme} />
-        }
-      </div>
-    );
+    return mode === 'conga'
+      ? <CongaMode key={theme.key} theme={theme} onHome={goHome} />
+      : <FeedingMode key={theme.key} theme={theme} onHome={goHome} />;
   }
 
   return <WorldPicker onSelect={selectTheme} />;

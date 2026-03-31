@@ -5,9 +5,8 @@ import useAudio from '../game/useAudio';
 import PlayerCharacter from '../components/PlayerCharacter';
 import FoodItem from '../components/FoodItem';
 import SoundLabel from '../components/SoundLabel';
-import HUD from '../components/HUD';
 import Confetti from '../components/Confetti';
-import MusicPlayer from '../components/MusicPlayer';
+import PauseOverlay from '../components/PauseOverlay';
 import type { Theme, WanderingAnimal, FoodEntity, SoundLabelData, ConfettiTrigger } from '../types';
 
 interface SparkleData {
@@ -70,9 +69,10 @@ function spawnAnimalFromEdge(theme: Theme): WanderingAnimal {
 
 interface Props {
   theme: Theme;
+  onHome: () => void;
 }
 
-export default function FeedingMode({ theme }: Props) {
+export default function FeedingMode({ theme, onHome }: Props) {
   const playerX = useRef(window.innerWidth / 2);
   const playerY = useRef(window.innerHeight * 0.6);
   const aimAngle = useRef(-Math.PI / 2);
@@ -88,6 +88,7 @@ export default function FeedingMode({ theme }: Props) {
 
   const [, setTick] = useState(0);
   const [confetti, setConfetti] = useState<ConfettiTrigger | null>(null);
+  const [gamePaused, setGamePaused] = useState(false);
 
   const { playSound, playCelebration, ensureContext, muted, toggleMute, startMusic, stopMusic, pauseMusic, resumeMusic, skipTrack, trackName, paused } = useAudio();
 
@@ -276,8 +277,43 @@ export default function FeedingMode({ theme }: Props) {
         backgroundColor: theme.bgGradient[1],
       }}
     >
-      <HUD count={scoreRef.current} accentColor={theme.accentColor} label="fed" muted={muted} onToggleMute={toggleMute} />
-      <MusicPlayer trackName={trackName} paused={paused} onPause={pauseMusic} onResume={resumeMusic} onSkip={skipTrack} />
+      {/* Pause button — top left */}
+      <button
+        onClick={() => setGamePaused(true)}
+        style={{
+          position: 'absolute',
+          top: 16,
+          left: 16,
+          zIndex: 50,
+          fontSize: '1.5rem',
+          background: 'rgba(255,255,255,0.7)',
+          border: 'none',
+          borderRadius: 12,
+          padding: '6px 12px',
+          cursor: 'pointer',
+          lineHeight: 1,
+        }}
+      >
+        {'\u23F8\uFE0F'}
+      </button>
+
+      {/* Score — top right */}
+      <div style={{
+        position: 'absolute',
+        top: 16,
+        right: 24,
+        zIndex: 50,
+        fontSize: '1.8rem',
+        fontWeight: 'bold',
+        color: '#fff',
+        textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+        background: theme.accentColor,
+        padding: '8px 20px',
+        borderRadius: 20,
+        userSelect: 'none',
+      }}>
+        {'\u{1F31F}'} {scoreRef.current} fed
+      </div>
 
       <svg
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 15 }}
@@ -381,6 +417,20 @@ export default function FeedingMode({ theme }: Props) {
       )}
 
       {confetti && <Confetti key={confetti.id} x={confetti.x} y={confetti.y} active={true} />}
+
+      {gamePaused && (
+        <PauseOverlay
+          onResume={() => setGamePaused(false)}
+          onHome={onHome}
+          muted={muted}
+          onToggleMute={toggleMute}
+          trackName={trackName}
+          musicPaused={paused}
+          onMusicPause={pauseMusic}
+          onMusicResume={resumeMusic}
+          onSkip={skipTrack}
+        />
+      )}
     </div>
   );
 }
