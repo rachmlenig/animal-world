@@ -10,6 +10,20 @@ import Confetti from '../components/Confetti';
 import MusicPlayer from '../components/MusicPlayer';
 import type { Theme, WanderingAnimal, FoodEntity, SoundLabelData, ConfettiTrigger } from '../types';
 
+interface SparkleData {
+  id: number;
+  x: number;
+  y: number;
+  time: number;
+}
+
+interface PuffData {
+  id: number;
+  x: number;
+  y: number;
+  time: number;
+}
+
 const AIM_SPEED = 3;
 const MIN_THROW_DISTANCE = 200;
 const MAX_THROW_DISTANCE = 400;
@@ -50,6 +64,7 @@ function spawnAnimalFromEdge(theme: Theme): WanderingAnimal {
     lastFedTime: 0,
     spawning: true,
     targetFood: null,
+    happyUntil: 0,
   };
 }
 
@@ -64,6 +79,8 @@ export default function FeedingMode({ theme }: Props) {
   const animalsRef = useRef<WanderingAnimal[]>([]);
   const foodsRef = useRef<FoodEntity[]>([]);
   const labelsRef = useRef<SoundLabelData[]>([]);
+  const sparklesRef = useRef<SparkleData[]>([]);
+  const puffsRef = useRef<PuffData[]>([]);
   const scoreRef = useRef(0);
   const timeRef = useRef(0);
   const spawnTimerRef = useRef(0);
@@ -152,6 +169,11 @@ export default function FeedingMode({ theme }: Props) {
       const h = window.innerHeight;
 
       for (const a of animals) {
+        // Happy linger — animal stays still and looks happy
+        if (a.happyUntil > t) {
+          continue;
+        }
+
         if (a.targetFood) {
           const f = foods.find((f) => f.id === a.targetFood);
           if (f && !f.eaten) {
@@ -162,10 +184,12 @@ export default function FeedingMode({ theme }: Props) {
               f.eaten = true;
               a.targetFood = null;
               a.lastFedTime = t;
+              a.happyUntil = t + 1.5;
               scoreRef.current++;
               playSound(a);
               labels.push({ id: uid(), x: a.x, y: a.y, text: a.sound, time: t });
               labels.push({ id: uid(), x: a.x + 20, y: a.y - 20, text: '\u2764\uFE0F', time: t });
+              sparklesRef.current.push({ id: uid(), x: a.x, y: a.y, time: t });
               if (scoreRef.current % 5 === 0) {
                 playCelebration();
                 confettiIdRef.current++;
@@ -211,11 +235,16 @@ export default function FeedingMode({ theme }: Props) {
 
       foodsRef.current = foods.filter((f) => {
         if (f.eaten) return false;
-        if (f.landedTime && t - f.landedTime > FOOD_LIFETIME) return false;
+        if (f.landedTime && t - f.landedTime > FOOD_LIFETIME) {
+          puffsRef.current.push({ id: uid(), x: f.x, y: f.y, time: t });
+          return false;
+        }
         return true;
       });
 
       labelsRef.current = labels.filter((l) => t - l.time < 0.8);
+      sparklesRef.current = sparklesRef.current.filter((s) => t - s.time < 0.8);
+      puffsRef.current = puffsRef.current.filter((p) => t - p.time < 0.6);
       setTick((tick) => tick + 1);
     },
     [getDirection, playSound, playCelebration, theme]
@@ -271,12 +300,19 @@ export default function FeedingMode({ theme }: Props) {
       ))}
 
       {animalsRef.current.map((a) => {
-        const hungry = t - a.lastFedTime > HUNGRY_TIME;
+        const happy = a.happyUntil > t;
+        const hungry = !happy && t - a.lastFedTime > HUNGRY_TIME;
+        const animalClass = a.spawning ? 'spawning' : happy ? 'happy-bounce' : 'idle-bob';
         return (
           <div key={`a-${a.id}`} style={{ position: 'absolute', left: a.x, top: a.y, transform: 'translate(-50%, -50%)', zIndex: 10, pointerEvents: 'none' }}>
-            <div className={a.spawning ? 'spawning' : 'idle-bob'} style={{ fontSize: '3rem', userSelect: 'none' }}>
+            <div className={animalClass} style={{ fontSize: '3rem', userSelect: 'none' }}>
               {a.emoji}
             </div>
+            {happy && (
+              <div className="happy-indicator" style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', fontSize: '1.5rem' }}>
+                {'\u{1F60A}'}
+              </div>
+            )}
             {hungry && (
               <div className="hungry-indicator" style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', fontSize: '1.5rem' }}>
                 {'\u{1F622}'}
@@ -285,6 +321,29 @@ export default function FeedingMode({ theme }: Props) {
           </div>
         );
       })}
+
+      {sparklesRef.current.map((s) => (
+        <div key={`sp-${s.id}`} className="sparkle-burst" style={{ position: 'absolute', left: s.x, top: s.y, zIndex: 60, pointerEvents: 'none' }}>
+          {[...Array(6)].map((_, i) => (
+            <span
+              key={i}
+              className="sparkle-particle"
+              style={{
+                '--angle': `${i * 60}deg`,
+                animationDelay: `${i * 0.04}s`,
+              } as React.CSSProperties}
+            >
+              {i % 2 === 0 ? '\u2B50' : '\u2728'}
+            </span>
+          ))}
+        </div>
+      ))}
+
+      {puffsRef.current.map((p) => (
+        <div key={`pf-${p.id}`} className="puff-effect" style={{ position: 'absolute', left: p.x, top: p.y, transform: 'translate(-50%, -50%)', zIndex: 30, pointerEvents: 'none', fontSize: '1.8rem' }}>
+          {'\u{1F4A8}'}
+        </div>
+      ))}
 
       {labelsRef.current.map((l) => (
         <SoundLabel key={`l-${l.id}`} x={l.x} y={l.y} text={l.text} />

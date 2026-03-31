@@ -19,6 +19,7 @@ export interface WanderingAnimal extends AnimalEntity {
   spawnTime: number;
   lastFedTime: number;
   targetFood: number | null;
+  happyUntil: number;
 }
 
 export interface FoodEntity {
